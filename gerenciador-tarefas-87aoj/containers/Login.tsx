@@ -1,21 +1,46 @@
-import React, {useState, ChangeEvent} from "react";
+import React, {useState, MouseEvent} from "react";
+import { NextPage} from 'next';
+import { executeRequest } from "../services/apiServices";
 
-export const Login = () => {
+type LoginProps = {
+    setAccessToken(e: string): void
+}
+
+export const Login:NextPage<LoginProps> = ({setAccessToken}) => {
 
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const doLogin = (evento: ChangeEvent) => {
+    const doLogin = async (evento: MouseEvent) => {
         try {
             evento.preventDefault();
+            setError('');
+
             if (!login || !password){
                 return setError('Favor informar usuário e senha');
             }
-            setError('Dados validados com sucesso!')
-        }
-        catch(e){
+            const body = {login, password};
+            const result = await executeRequest('login', 'POST', body);
+            console.log(result);
+
+            if(!result || !result.data){
+                return setError('Ocorreu erro ao processar login, tente novamente!');
+            } 
+
+            const {name, email, token} =  result.data;
+            localStorage.setItem('accessToken', token);
+            localStorage.setItem('userName', name);
+            localStorage.setItem('userMail', email);
+
+            setAccessToken(token);
+
+        }catch(e: any){
             console.log(e);
+            if (e?.response?.data?.error){
+                return setError(e?.response?.data?.error);
+            }
+            setError('Ocorreu erro ao processar login, tente novamente!')
         }
     }
 
@@ -23,7 +48,7 @@ export const Login = () => {
         <div className="container-login">
             <img className="logo" src="/logo.svg" alt="Logo Fiap"/>
             <form>
-                <p classname="error">{error}</p>
+                <p className="error">{error}</p>
                 <div className="input">
                     <img src="/mail.svg" alt="Informe seu login"/>
                     <input type="text" placeholder="login" 
