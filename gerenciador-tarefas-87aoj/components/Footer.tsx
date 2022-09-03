@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import React from 'react';
+import React, { useState } from 'react';
 
 type FooterProps = {
     setShowModal(e : boolean) : void

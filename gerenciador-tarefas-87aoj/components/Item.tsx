@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
 import { NextPage } from 'next';
 import React from 'react';
 import {Task} from '../types/Task';
@@ -20,8 +18,9 @@ export const Item:NextPage<ItemProps> = ({task, selectTaskToEdit}) => {
     }
     
     return (
-        <div className={"container-item"+ (task.finishDate? "" : " ativo")}>
-            <img src={task.finishDate? '/checked.svg' : '/not-checked.svg'}
+        <div className={"container-item"+ (task.finishDate? "" : " ativo")}
+            onClick={_ => task.finishDate ? null : selectTaskToEdit(task)}>
+            <img className='img' src={task.finishDate? '/checked.svg' : '/not-checked.svg'}
                 alt={task.finishDate? 'Atividade Concluída' : 'Atividade Ativa'}/>
             <div>
                 <p className={task.finishDate? "concluido" : ""}>{task.name}</p>
